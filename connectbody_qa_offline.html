@@ -1,0 +1,227 @@
+
+<h2 class="sr-only">커넥트바디 트레이너 교육 Q&A — AiM FMM PRI 내장형 지식 검색 도우미</h2>
+<style>
+.w{font-size:14px}
+.hdr{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:.85rem 1.1rem;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.hdr-ic{width:38px;height:38px;border-radius:50%;background:#002830;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hdr-t{font-size:15px;font-weight:500;color:var(--color-text-primary);margin:0 0 2px}
+.hdr-s{font-size:12px;color:var(--color-text-secondary);margin:0}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.tb{font-size:12px;font-weight:500;padding:5px 13px;border-radius:20px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);cursor:pointer;transition:all .15s}
+.tb:hover{background:var(--color-background-secondary)}
+.tb.on{background:#002830;color:#fff;border-color:#002830}
+.chat{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);background:var(--color-background-primary);min-height:300px;max-height:400px;overflow-y:auto;padding:.9rem;margin-bottom:8px;display:flex;flex-direction:column;gap:10px}
+.chat::-webkit-scrollbar{width:3px}
+.chat::-webkit-scrollbar-thumb{background:var(--color-border-secondary);border-radius:3px}
+.msg{display:flex;gap:8px;align-items:flex-start}
+.msg.u{flex-direction:row-reverse}
+.av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0}
+.msg.b .av{background:#002830;color:#fff}
+.msg.u .av{background:var(--color-background-info);color:var(--color-text-info)}
+.bbl{max-width:85%;padding:8px 12px;border-radius:var(--border-radius-lg);font-size:13px;line-height:1.7}
+.msg.b .bbl{background:var(--color-background-secondary);color:var(--color-text-primary);border-radius:4px var(--border-radius-lg) var(--border-radius-lg) var(--border-radius-lg)}
+.msg.u .bbl{background:#002830;color:#fff;border-radius:var(--border-radius-lg) 4px var(--border-radius-lg) var(--border-radius-lg)}
+.tag{display:inline-block;font-size:11px;font-weight:500;padding:2px 7px;border-radius:10px;margin:0 3px 3px 0}
+.ta{background:#e6f7f6;color:#007a72}
+.tf{background:#edf7f1;color:#2a7a50}
+.tp{background:#f0efff;color:#4a3db0}
+.srow{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.sb{font-size:12px;padding:5px 11px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);color:var(--color-text-secondary);cursor:pointer;text-align:left;transition:background .13s}
+.sb:hover{background:var(--color-background-primary);color:var(--color-text-primary)}
+.irow{display:flex;gap:7px;align-items:flex-end}
+.inp{flex:1;padding:8px 11px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);font-size:13px;font-family:inherit;resize:none;min-height:38px;max-height:90px;outline:none;line-height:1.5}
+.inp:focus{border-color:#00A89C}
+.sbtn{width:38px;height:38px;border-radius:var(--border-radius-md);background:#002830;border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px}
+.sbtn:hover{opacity:.85}
+.ft{font-size:11px;color:var(--color-text-tertiary);text-align:center;margin-top:6px}
+.hl{color:#00A89C;font-weight:500}
+</style>
+
+<div class="w">
+<div class="hdr">
+  <div class="hdr-ic"><i class="ti ti-brain" style="font-size:18px;color:#00A89C" aria-hidden="true"></i></div>
+  <div>
+    <p class="hdr-t">커넥트바디 트레이너 Q&A</p>
+    <p class="hdr-s">AiM · FMM · PRI 내장형 지식 도우미 (오프라인 작동)</p>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tb on" data-t="all" onclick="setTab(this)">전체</button>
+  <button class="tb" data-t="aim" onclick="setTab(this)"><span class="tag ta">AiM</span> 5가지 빅 룰</button>
+  <button class="tb" data-t="fmm" onclick="setTab(this)"><span class="tag tf">FMM</span> 보행·동작</button>
+  <button class="tb" data-t="pri" onclick="setTab(this)"><span class="tag tp">PRI</span> 자세 복원</button>
+</div>
+
+<div class="chat" id="chatBox"></div>
+<div class="srow" id="sugRow"></div>
+<div class="irow">
+  <textarea class="inp" id="inp" placeholder="질문을 입력하세요..." rows="1" onkeydown="onKey(event)" oninput="resize(this)"></textarea>
+  <button class="sbtn" onclick="ask()" aria-label="전송"><i class="ti ti-arrow-up" aria-hidden="true"></i></button>
+</div>
+<p class="ft">커넥트바디 교육자료 기반 내장형 Q&A · 인터넷 연결 불필요</p>
+</div>
+
+<script>
+const KB = [
+  {t:["aim","all"], k:["big rule 1","빅 룰 1","근육 늘어난","muscles lengthen","원심성","eccentric","수축 위치","길이 수축"],
+   q:"Big Rule 1이 뭐야? / 근육은 왜 먼저 늘어나야 해?",
+   a:`<span class="tag ta">AiM · Big Rule 1</span><br><br><b>근육은 가장 늘어난 위치에서 수축한다</b> (Muscles Lengthen Before They Contract)<br><br>모든 근육 수축에는 먼저 <span class="hl">원심성 늘어남(lengthening)</span>이 선행돼야 해. 관절이 중심에서 멀어질 때 근육이 늘어나고, 돌아올 때 수축하는 거야.<br><br>핵심 3가지 목적:<br>① <b>강한 수축 위치 만들기</b> — 길이 없이는 강도 없다<br>② <b>수축 인식 만들기</b> — 둔근은 고관절 굴곡+내회전으로 충분한 길이 준 후 수축<br>③ <b>관절의 새로운 움직임 돕기</b> — 발 프로나팅 → 수피나팅 근육 자동 활성화<br><br>현장 적용: 운동 전에 "그 근육이 충분히 늘어날 수 있는 위치"를 먼저 만들어야 효과적인 수축이 가능해.`},
+
+  {t:["aim","all"], k:["big rule 2","빅 룰 2","관절 작용","근육 반응","joints act","muscles react","관절 먼저"],
+   q:"Big Rule 2 — 관절이 먼저야, 근육이 먼저야?",
+   a:`<span class="tag ta">AiM · Big Rule 2</span><br><br><b>관절이 작용하고, 근육이 반응한다</b> (Joints Act: Muscles React)<br><br>근육 약화의 원인은 대부분 그 <span class="hl">관절의 움직임 접근성 부족</span>이야. 근육을 직접 강화하기 전에 관절이 움직임에 접근할 수 있는지 먼저 확인해야 해.<br><br>예시: 둔근이 약한 게 문제가 아니라 → 고관절이 굴곡·내회전에 접근을 못하기 때문에 둔근이 활성화되지 않는 거야.<br><br>현장 적용: "이 근육이 왜 안 켜지지?"라는 질문이 아니라 → <span class="hl">"어떤 관절 움직임이 막혀있지?"</span>로 바꿔서 봐야 해.`},
+
+  {t:["aim","all"], k:["big rule 3","빅 룰 3","중심","everything moves","centre","연쇄"],
+   q:"Big Rule 3 — 중심이 왜 중요해?",
+   a:`<span class="tag ta">AiM · Big Rule 3</span><br><br><b>모든 것은 중심을 중심으로 움직인다</b> (Everything Moves Around Centre)<br><br>신체의 모든 움직임은 <span class="hl">중심(Centre)을 기준</span>으로 구성돼. 한 관절의 움직임 제한이 전신에 연쇄 반응을 일으키는 이유야.<br><br>예시: 발목 움직임이 제한되면 → 무릎이 보상 → 고관절이 보상 → 요추가 보상. 발목 하나가 막혀서 허리가 아플 수 있어.<br><br>현장 적용: 통증 부위만 보지 말고, <span class="hl">전신에서 움직임이 막힌 관절을 찾는 것</span>이 출발점이야.`},
+
+  {t:["aim","all"], k:["big rule 2 3 차이","rule2 rule3","2랑 3","2와 3"],
+   q:"Big Rule 2랑 3의 차이가 뭐야?",
+   a:`<span class="tag ta">AiM · Big Rule 2 vs 3</span><br><br><b>Rule 2</b>: 관절-근육 관계 → "관절이 먼저 움직여야 근육이 반응한다" (하나의 관절 레벨)<br><b>Rule 3</b>: 전신 연쇄 → "한 관절 제한이 전신으로 퍼진다" (시스템 레벨)<br><br>쉽게 말하면:<br>• Rule 2 = <span class="hl">관절 하나</span>에서 관절과 근육의 관계<br>• Rule 3 = <span class="hl">전신 차원</span>에서 중심 기준으로 연쇄 반응<br><br>함께 적용: 고관절(Rule 2) → 고관절이 막히면 허리까지 보상 연쇄(Rule 3)`},
+
+  {t:["aim","all"], k:["big rule 4","빅 룰 4","com","cog","cop","무게중심","중력중심","압력중심","인식된 중심"],
+   q:"COM / COG / COP 차이가 뭐야?",
+   a:`<span class="tag ta">AiM · Big Rule 4</span><br><br><b>인식된 중심이 통증·성과·잠재력을 결정한다</b><br><br>세 가지 중심 개념:<br><br>• <b>COM (무게중심)</b>: 신체 전체 질량의 중심점. 대략 <span class="hl">L4/L5 수준</span>, 배꼽 아래. 움직임에 따라 이동<br>• <b>COG (중력중심)</b>: COM을 지면에 수직 투영한 점. 이 점이 <span class="hl">기저면(BOS) 안에</span> 있어야 균형 유지<br>• <b>COP (압력중심)</b>: 발 아래 평균 압력의 중심. 보행 중 <span class="hl">뒤꿈치→앞발</span>로 이동하는 게 FMM 곡선의 핵심<br><br>핵심: 뇌가 인식하는 중심이 실제와 다를 때 → 통증, 보상패턴, 퍼포먼스 한계 발생.`},
+
+  {t:["aim","all"], k:["big rule 5","빅 룰 5","뇌","완벽","자세 강제","교정","hardwired","brain","스스로"],
+   q:"Big Rule 5 — 왜 자세를 강제로 교정하면 안 돼?",
+   a:`<span class="tag ta">AiM · Big Rule 5</span><br><br><b>뇌는 완벽함을 향해 설계되어 있다</b> (The Brain is Hardwired for Potential)<br><br><span class="hl">잃어버린 움직임을 되돌리면</span> 몸은 스스로 중심을 향해 재조직돼. 우리가 강제로 자세를 교정할 필요가 없어.<br><br>통증과 보상 패턴은 몸이 현재 가진 자원으로 <span class="hl">최선을 다해 기능한 결과</span>야. 몸이 "잘못되어 있다"고 보지 마.<br><br>임상 의미:<br>• 치료 결과 = "무엇을 고쳤는가" ❌<br>• 치료 결과 = "<span class="hl">어떤 움직임을 되돌렸는가</span>" ✅<br><br>현장 적용: "어깨 펴!" 대신 → 흉추 회전 움직임을 되돌려주면 어깨는 자동으로 제 위치로 가.`},
+
+  {t:["fmm","all"], k:["보행","fmm phase","strike","suspension","transition","shift","propulsion","5단계","착지","지지","전환","이동","추진"],
+   q:"FMM 보행 5단계 설명해줘",
+   a:`<span class="tag tf">FMM · 보행 5단계</span><br><br>① <b>Strike (착지)</b>: 뒤꿈치 접지 → <span class="hl">햄스트링</span> 원심성 부하 (고관절 굴곡+무릎 신전으로 전장)<br>② <b>Suspension (지지)</b>: 단하지 지지 → <span class="hl">둔근</span> 원심성 부하 (고관절 굴곡+내회전 최대)<br>③ <b>Transition (전환)</b>: 골반 회전 방향 전환 → <span class="hl">복횡사근 계열</span> (복부 나선 비틀림 길이)<br>④ <b>Shift (이동)</b>: 중심이 지지발 위로 이동 → <span class="hl">내전근+장요근</span> 늘어남<br>⑤ <b>Propulsion (추진)</b>: 발가락으로 추진 → <span class="hl">대요근</span> 전방 길이 최대<br><br>핵심: 각 단계에서 어떤 근육이 <span class="hl">먼저 늘어나야(Big Rule 1)</span> 다음 단계에서 제대로 수축할 수 있어.`},
+
+  {t:["fmm","all"], k:["무릎 스크류","knee screw","수피나이션","경골","대퇴골","tibia","femur","ckc","잠금","lock"],
+   q:"무릎 스크류 메커니즘이 뭐야?",
+   a:`<span class="tag tf">FMM · 무릎 스크류 메커니즘</span><br><br>FMM CKC(닫힌 사슬) 기준:<br><br>발 <span class="hl">수피나이션</span> → 경골과 대퇴골 <b>모두</b> 외회전<br>단, <span class="hl">대퇴골이 더 많이 외회전</span> → 경골은 대퇴골 기준 <b>상대적 내회전</b> = 무릎 잠금(lock)<br><br>즉: 발 수피나이션 = 무릎 안정화<br>발 프로나이션 = 무릎 잠금 해제 = 충격 흡수 가능<br><br>현장 적용:<br>• 착지 시 → 프로나이션으로 충격 흡수 (무릎 잠금 풀림)<br>• 추진 시 → 수피나이션으로 무릎 잠금 → 효율적 추진력<br>• 무릎 통증 = 이 전환이 안 되는 게 원인인 경우 많아`},
+
+  {t:["fmm","all"], k:["스쿼트","squat","무릎 안쪽","knee valgus","발뒤꿈치","허리","보상"],
+   q:"스쿼트할 때 무릎이 안으로 무너져요 — 원인이 뭐야?",
+   a:`<span class="tag tf">FMM · 스쿼트 패턴</span><br><br>무릎 내측 붕괴(knee valgus) 주요 원인:<br><br>① <b>고관절 내회전+내전 패턴</b>: 고관절 외회전 접근성 부족 → 무릎이 안으로 무너짐<br>② <b>발 수피나이션 부족</b>: 발 아치 붕괴 → 경골 내회전 → 무릎 내측 붕괴<br>③ <b>발목 배측굴곡 제한</b>: 발목이 안 꺾여서 뒤꿈치 들림 OR 무릎 과전방 이동<br><br>FMM 접근법: "무릎 안으로 들어가지 마!"가 아니라<br>→ <span class="hl">발 아치 회복 (Toe Pro 활용)</span><br>→ <span class="hl">고관절 굴곡+외회전 접근성</span> 먼저 만들기<br>→ 발목 가동성 확보<br><br>그러면 무릎은 자동으로 정렬돼. (Big Rule 5)`},
+
+  {t:["fmm","all"], k:["데드리프트","deadlift","힙힌지","hip hinge","햄스트링","고관절 굴곡"],
+   q:"데드리프트에서 고관절이 안 접혀요",
+   a:`<span class="tag tf">FMM · 데드리프트 패턴</span><br><br>힙 힌지 = <span class="hl">고관절 굴곡 + 중립 척추</span><br><br>안 되는 두 가지 원인 구분이 중요해:<br><br>① <b>햄스트링 길이 부족</b>: 유연성 문제<br>→ 눈으로 보면 척추가 굴곡되면서 보상<br><br>② <b>고관절 굴곡 접근성 부족</b>: 관절 움직임 문제 (Big Rule 2)<br>→ 유연성은 있는데 패턴이 안 만들어진 경우<br><br>구별법: 바닥에 누워서 고관절 굴곡 테스트 → 누운 자세에서도 안 되면 관절 접근성 문제.<br><br>현장 적용: 먼저 <span class="hl">고관절 내회전+굴곡 움직임</span> 확보 → 그 다음 힙 힌지 패턴 학습.`},
+
+  {t:["fmm","all"], k:["타입 1","타입 2","type 1","type 2","팔 회전","arm rotation","견갑골","나선 긴장","spiral"],
+   q:"Type 1 vs Type 2 팔 회전 차이가 뭐야?",
+   a:`<span class="tag tf">FMM · 팔 회전 타입</span><br><br><b>Type 1 팔 회전</b>: 팔 회전이 견갑골과 <span class="hl">커플링(coupling)</span>되어 흉곽 회전 발생<br>→ 팔 움직이면 몸통도 같이 돌아가는 패턴<br><br><b>Type 2 팔 회전</b>: 견갑골이 <span class="hl">독립적으로 움직여</span> 흉곽 나선 긴장 발생<br>→ 팔 움직임이 흉곽에 나선형 장력 생성<br><br>나선 긴장(Spiral Tension): 전신 회전 연쇄 반응의 핵심. Type 2가 제대로 되어야 보행 중 팔다리 반대 패턴(대각선 협응)이 효율적으로 작동해.<br><br>현장: 보행 재교육, 런닝 폼 교정에 중요하게 적용돼.`},
+
+  {t:["pri","all"], k:["l-aic","l aic","left aic","왼쪽","비대칭","패턴","posture"],
+   q:"L-AIC 패턴이란?",
+   a:`<span class="tag tp">PRI · L-AIC 패턴</span><br><br>인체는 구조적으로 <span class="hl">비대칭</span>이야 (우측 횡격막이 더 강함). 이로 인해 대부분 사람에게 L-AIC(Left AIC) 패턴이 기본 보상으로 나타나.<br><br>전신 연쇄:<br>• 골반: <span class="hl">우측 전방경사</span> / 좌측 후방경사<br>• 요추: 우측 측굴 / <span class="hl">좌측 회전</span><br>• 흉곽: 우측으로 shift / 좌측 회전<br>• 흉추: 우측 측굴 / 좌측 회전<br>• 경추: 좌측 측굴 / 하부경추 우측 회전<br>• 두개골: 우측 torsion<br><br>핵심: 비대칭은 병리가 아니라 <span class="hl">인체의 정상적 보상 전략</span>이야.`},
+
+  {t:["pri","all"], k:["경추 보상","경추","cervical","두개골","접형골","sphenoid","cranial","oa","aa","dissociation","cranial cervical"],
+   q:"L-AIC 패턴에서 경추 보상 패턴이 어떻게 돼?",
+   a:`<span class="tag tp">PRI · 경추 & 두개골 보상</span><br><br>접형골(Sphenoid): L-AIC에서 흉곽 좌측 회전력이 위로 전달 → <span class="hl">우측 torsion</span><br><br>경추 보상 패턴:<br>• 하부경추(C3-C7): 좌측 측굴 + <span class="hl">우측 회전</span><br>• 상부경추(OA/AA): 두개골 우측 회전을 보상하기 위해 <span class="hl">좌측 회전</span><br>• → 이게 <b>cranial-cervical dissociation</b> (두개골과 하부경추가 다른 방향 회전)<br><br>임상에서 보이는 것:<br>• 좌측 흉쇄유돌근(SCM) 긴장<br>• 우측 상부승모근 과활성<br>• 턱(mandible) 좌측 편위<br><br>⚠️ 중요: 경추 교정은 <span class="hl">골반+흉곽 중립화 후</span>에만 가능해. 위에서 직접 교정 불가.`},
+
+  {t:["pri","all"], k:["t12","t12-l1","흉요추","이행부","transitional","비틀림","torsion 누적"],
+   q:"T12-L1 이행부에서 비틀림이 생기는 이유가 뭐야?",
+   a:`<span class="tag tp">PRI · 흉요추 이행부</span><br><br>T12-L1은 <span class="hl">두 곡선이 만나는 전환점</span>이야.<br><br>요추: 좌측 회전 → 흉추: 좌측 회전 → 같은 방향 회전력이 T12에서 누적<br>→ T12 추체 자체가 비틀리면서 <span class="hl">shear force 발생</span><br><br>이게 경추의 OA 관절과 <b>구조적으로 동일한 원리</b>야:<br>• T12-L1 = 요추/흉추 회전 전환점 → 비틀림 누적<br>• C7-T1 = 경추/흉추 전환점 → 비틀림 누적<br>• OA 관절 = 경추/두개골 전환점 → 보상 회전<br><br>임상 의미: 허리-흉추 경계 통증, T12 주변 강직은 패턴 교정 없이 국소 치료만으로 해결 어려워.`},
+
+  {t:["pri","all"], k:["isa","infrasternal","흉골하각","넓은","좁은","호흡","흡기","호기"],
+   q:"ISA가 넓으면 뭐가 문제야?",
+   a:`<span class="tag tp">PRI · ISA (흉골하각)</span><br><br>ISA(Infrasternal Angle) = 흉골 아래 갈비뼈 사이 각도<br><br>• <b>넓은 ISA</b>: <span class="hl">흡기 우세</span>, 흉곽 확장 상태 → 날숨이 잘 안 됨 → 교감신경 과활성 경향<br>• <b>좁은 ISA</b>: <span class="hl">호기 우세</span>, 흉곽 압박 상태 → 들숨이 잘 안 됨<br><br>L-AIC 패턴에서 좌우 ISA 비대칭이 나타나는 게 특징이야.<br><br>PRI 개입 순서: <span class="hl">호흡 패턴 교정 → 골반 중립화 → 흉곽 중립화 → 경추</span><br><br>현장 적용: ISA 측정하면서 호흡 재교육 → 흉곽 비대칭 감소 → 어깨·경추 문제까지 연쇄적으로 개선 가능.`},
+
+  {t:["pri","all"], k:["골반 4사분면","4사분면","aup","pup","plow","alow","치료 순서","개입 순서"],
+   q:"골반 4사분면 치료 순서 알려줘",
+   a:`<span class="tag tp">PRI · 골반 4사분면 프레임워크</span><br><br>4가지 구역:<br>• <b>AUP</b> (Anterior Upper Pelvis): 전상방 골반<br>• <b>PUP</b> (Posterior Upper Pelvis): 후상방 골반<br>• <b>PLOW</b> (Posterior Lower Pelvis): 후하방 골반<br>• <b>ALOW</b> (Anterior Lower Pelvis): 전하방 골반<br><br>치료 순서: <span class="hl">AUP → PUP → PLOW → ALOW</span><br><br>L-AIC 패턴에서 우측이 AUP 상태(전방경사)이므로 → AUP 억제부터 시작 → 순서대로 골반 중립화 진행.<br><br>순서를 지키지 않으면 일부만 교정되고 전체 패턴이 흔들릴 수 있어.`},
+
+  {t:["pri","all"], k:["견갑골","어깨","winging","날개 견갑","전거근","serratus","흉곽 회전","shoulder"],
+   q:"견갑골 익상(winging)이 왜 생겨?",
+   a:`<span class="tag tp">PRI · 견갑골 & 어깨</span><br><br>연결 고리:<br>흉곽 좌측 회전(L-AIC) → <span class="hl">좌측 전거근(serratus anterior) 약화</span> → 좌측 견갑골 익상(winging)<br><br>즉, 견갑골 문제를 어깨에서만 보면 안 돼. <span class="hl">흉곽 회전 패턴이 먼저야.</span><br><br>PRI 접근:<br>① ISA 확인 + 호흡 패턴 교정<br>② 흉곽 중립화 (좌측 회전 감소)<br>③ 전거근 활성화 운동<br>④ 견갑골 안정화<br><br>이 순서 없이 전거근만 강화하면 일시적 효과에 그쳐.`},
+
+  {t:["aim","fmm","pri","all"], k:["차이","다른점","비교","구분","뭐가 달라"],
+   q:"AiM, FMM, PRI — 이 세 가지가 어떻게 달라?",
+   a:`<span class="tag ta">AiM</span> <span class="tag tf">FMM</span> <span class="tag tp">PRI</span> 비교<br><br><b>AiM (Applied in Motion)</b><br>→ <span class="hl">철학/원칙</span>. 왜 근육이 그 상태인지 이해하는 5가지 빅 룰. "관절 먼저, 근육은 반응한다"<br><br><b>FMM (Functional Movement Mechanics)</b><br>→ <span class="hl">분석 도구</span>. 보행·스쿼트·데드리프트 등 동적 움직임 분석법. AiM 원칙을 실제 동작에 적용하는 방법<br><br><b>PRI (Postural Restoration Institute)</b><br>→ <span class="hl">자세/호흡 시스템</span>. 인체 구조적 비대칭(L-AIC 패턴)과 호흡 기반 자세 교정. 골반~흉곽~경추 연쇄 패턴 치료 순서<br><br>커넥트바디 적용: PRI로 패턴 파악 → AiM 원칙으로 접근 → FMM으로 동작 재교육`}
+];
+
+const SUGG = {
+  all:["Big Rule 1이 뭐야?","L-AIC 패턴이란?","FMM 보행 5단계","무릎 스크류 메커니즘","AiM FMM PRI 차이가 뭐야?"],
+  aim:["Big Rule 1 실습 적용법","Big Rule 2랑 3의 차이?","왜 자세를 강제로 교정하면 안 돼?","COM COG COP 뭐가 달라?"],
+  fmm:["보행 5단계 설명해줘","스쿼트 무릎 안쪽 무너짐 원인?","Type 1 vs Type 2 팔 회전 차이?","데드리프트 힙힌지가 안 돼요"],
+  pri:["L-AIC 패턴 경추 보상은?","ISA가 넓으면 문제야?","골반 4사분면 치료 순서","견갑골 익상이 왜 생겨?"]
+};
+
+let curTab='all';
+let chatMsgs=[];
+
+function setTab(btn){
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  curTab=btn.dataset.t;
+  renderSugg();
+}
+
+function renderSugg(){
+  const r=document.getElementById('sugRow');
+  r.innerHTML='';
+  SUGG[curTab].forEach(s=>{
+    const b=document.createElement('button');
+    b.className='sb';b.textContent=s;
+    b.onclick=()=>{document.getElementById('inp').value=s;ask();};
+    r.appendChild(b);
+  });
+}
+
+function score(entry, q){
+  const lq=q.toLowerCase().replace(/\s+/g,'');
+  let s=0;
+  entry.k.forEach(k=>{
+    const lk=k.toLowerCase().replace(/\s+/g,'');
+    if(lq.includes(lk)||lk.includes(lq)) s+=lk.length;
+    else {
+      const words=lk.split(/[\s·]/);
+      words.forEach(w=>{if(w.length>1&&lq.includes(w)) s+=w.length*0.5;});
+    }
+  });
+  if(curTab!=='all'&&!entry.t.includes(curTab)) s*=0.2;
+  return s;
+}
+
+function findAnswer(q){
+  let best=null,bestScore=0;
+  KB.forEach(e=>{
+    const s=score(e,q);
+    if(s>bestScore){bestScore=s;best=e;}
+  });
+  if(bestScore>1) return best.a;
+  return `지금 입력하신 "<b>${q}</b>"에 대한 내용이 아직 내장되어 있지 않아요.<br><br>아래 주제 중 하나를 눌러보시거나, 이 대화 바깥 Claude 채팅창에서 직접 물어보시면 더 자세한 답변을 받을 수 있어요.<br><br><span class="hl">내장된 주제들:</span> Big Rule 1~5, FMM 보행 5단계, 무릎 스크류, 스쿼트/데드리프트 패턴, L-AIC, 경추 보상, T12-L1 이행부, ISA, 골반 4사분면, 견갑골 익상`;
+}
+
+function addMsg(role,html){
+  chatMsgs.push({role,html});
+  render();
+}
+
+function render(){
+  const box=document.getElementById('chatBox');
+  box.innerHTML='';
+  if(chatMsgs.length===0){
+    box.innerHTML='<div style="text-align:center;padding:2rem 0;color:var(--color-text-tertiary);font-size:13px"><i class="ti ti-message-question" style="font-size:30px;display:block;margin-bottom:8px" aria-hidden="true"></i>주제 탭을 선택하거나<br>자유롭게 질문해보세요</div>';
+    return;
+  }
+  chatMsgs.forEach(m=>{
+    const d=document.createElement('div');
+    d.className='msg '+(m.role==='user'?'u':'b');
+    d.innerHTML=`<div class="av">${m.role==='user'?'나':'Q'}</div><div class="bbl">${m.html}</div>`;
+    box.appendChild(d);
+  });
+  box.scrollTop=box.scrollHeight;
+}
+
+function ask(){
+  const inp=document.getElementById('inp');
+  const q=inp.value.trim();
+  if(!q) return;
+  inp.value='';inp.style.height='auto';
+  addMsg('user',q);
+  setTimeout(()=>{addMsg('bot',findAnswer(q));},120);
+}
+
+function onKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();ask();}}
+function resize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,90)+'px';}
+
+render();renderSugg();
+</script>
